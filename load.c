@@ -43,8 +43,10 @@ int fmt_load_string( char *buf, size_t size, fmt_t *obj )
 		goto error;
 
 	/* try to parse */
-	while((err = jsmn_parse(&obj->parser, obj->js,
-	       obj->tok, obj->num_tokens)) == JSMN_ERROR_NOMEM)
+	while ( (err = jsmn_parse( &obj->parser, obj->js,
+				   strlen(obj->js), obj->tok,
+				   obj->num_tokens ))
+		== JSMN_ERROR_NOMEM )
 	{
 		/* allocate more tokens and try to parse again */
 		obj->num_tokens += add_tokens;
@@ -60,7 +62,7 @@ int fmt_load_string( char *buf, size_t size, fmt_t *obj )
 								add_tokens );
 	}
 
-	if( err != JSMN_SUCCESS ) {
+	if ( err < 0 ) {
 		obj->js[0] = '\0';
 		err =  LIBFMT_ERR_PARSER;
 		goto error;
@@ -132,8 +134,10 @@ int fmt_load_fp( FILE **fp, fmt_t **obj )
 		goto error;
 
 	/* try to parse */
-	while((err = jsmn_parse( &(*obj)->parser, (*obj)->js, (*obj)->tok,
-				(*obj)->num_tokens )) == JSMN_ERROR_NOMEM)
+	while ( (err = jsmn_parse( &(*obj)->parser, (*obj)->js,
+				   strlen((*obj)->js), (*obj)->tok,
+				   (*obj)->num_tokens ))
+		== JSMN_ERROR_NOMEM )
 	{
 		/* allocate more tokens and try to parse again */
 		(*obj)->num_tokens += add_tokens;
@@ -149,7 +153,7 @@ int fmt_load_fp( FILE **fp, fmt_t **obj )
 		mark_token_unused((*obj)->tok + (*obj)->num_tokens - add_tokens,
 								add_tokens);
 	}
-	if( err != JSMN_SUCCESS ) {
+	if ( err < 0 ) {
 		(*obj)->js[0] = '\0';
 		err = LIBFMT_ERR_PARSER;
 		goto error;
