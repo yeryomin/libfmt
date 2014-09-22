@@ -25,7 +25,7 @@ clean:
 	rm -f $(LIBNAME)$(STATIC)
 
 .c.o: $(HEADERS)
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@
+	$(CC) -c -DJSMN_PARENT_LINKS $(CFLAGS) $(INCLUDES) $< -o $@
 
 
 .PHONY: default all $(LIBNAME)$(SHARED) $(LIBNAME)$(STATIC)
