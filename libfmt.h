@@ -121,8 +121,6 @@ typedef struct fmt_checksum_t {
 #include "ezjson.h"
 
 
-int fmt_parser_init( fmt_t *p, uint32_t size )__attribute__((deprecated));
-
 /**
  * @brief Load parser, reading data from string
  *

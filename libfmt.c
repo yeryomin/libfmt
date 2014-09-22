@@ -17,11 +17,6 @@
 #include "fmt_priv.h"
 
 
-int fmt_parser_init( fmt_t *p, uint32_t size )
-{
-	return LIBFMT_ERR_NONE;
-}
-
 int fmt_object( fmt_t *res )
 {
 	return fmt_new( "{}", 2, FMT_TYPE_OBJECT, res );
