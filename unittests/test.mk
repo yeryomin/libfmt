@@ -41,7 +41,7 @@ $(testobjs): $(DEPENDENCIES)
 .c.o:
 	@echo Compiling $<
 	@rm -f $@
-	-@$(CC) -c -DJSMN_PARENT_LINKS $(CFLAGS) $(INCLUDES) $< -o $@
+	-@$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@
 
 test_%/test: test_%/test.o
 	@echo "Linking  " $<

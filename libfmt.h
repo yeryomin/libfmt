@@ -14,6 +14,10 @@
 extern "C" {
 #endif
 
+#ifndef JSMN_PARENT_LINKS
+#define JSMN_PARENT_LINKS
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <jsmn.h>
