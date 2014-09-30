@@ -24,8 +24,6 @@ int fmt_load_string( char *buf, size_t size, fmt_t *obj )
 	if(!buf || !obj || (size < 2))
 		return LIBFMT_ERR_GENERIC;
 
-	obj->js = NULL; // seg.fault protection
-
 	err = parser_init( obj, LIBFMT_TOK_COUNT_MIN );
 	if( err )
 		return err;
