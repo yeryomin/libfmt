@@ -36,7 +36,7 @@ int fmt_load_string( char *buf, size_t size, fmt_t *obj )
 	}
 
 	memcpy(obj->js, buf, size);
-	err = fmt_load_normalized_new(obj->js, size);
+	err = fmt_load_normalized(obj->js, size);
 	if(err)
 		goto error;
 
@@ -124,7 +124,7 @@ int fmt_load_fp( FILE **fp, fmt_t **obj )
 		goto error;
 	}
 
-	err = fmt_load_normalized_new((*obj)->js, acc);
+	err = fmt_load_normalized((*obj)->js, acc);
 	if(err)
 		goto error;
 

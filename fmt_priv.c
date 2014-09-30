@@ -301,7 +301,7 @@ int parser_init( fmt_t *obj, uint32_t size )
 	return LIBFMT_ERR_NONE;
 }
 
-int fmt_load_normalized_new(char *iobuf, size_t size)
+int fmt_load_normalized(char *iobuf, size_t size)
 {
 	int i, shift = 0, inq = 0, escape = 0;
 	char symb;
