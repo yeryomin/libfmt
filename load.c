@@ -20,6 +20,7 @@ int fmt_load_string( char *buf, size_t size, fmt_t *obj )
 {
 	int err = 0;
 	int add_tokens = 2;
+	size_t len = 0;
 
 	if(!buf || !obj || (size < 2))
 		return LIBFMT_ERR_GENERIC;
@@ -36,14 +37,15 @@ int fmt_load_string( char *buf, size_t size, fmt_t *obj )
 	}
 
 	memcpy(obj->js, buf, size);
-	err = fmt_load_normalized(obj->js, size);
-	if(err)
+	len = fmt_load_normalized( obj->js, size );
+	if ( len < 2 ) {
+		err = LIBFMT_ERR_NORMALIZE;
 		goto error;
+	}
 
 	/* try to parse */
-	while ( (err = jsmn_parse( &obj->parser, obj->js,
-				   strlen(obj->js), obj->tok,
-				   obj->num_tokens ))
+	while ( (err = jsmn_parse( &obj->parser, obj->js, len,
+				    obj->tok, obj->num_tokens ))
 		== JSMN_ERROR_NOMEM )
 	{
 		/* allocate more tokens and try to parse again */
@@ -94,8 +96,8 @@ int fmt_load_fp( FILE **fp, fmt_t **obj )
 	if( *fp == NULL )
 		return LIBFMT_ERR_GENERIC;
 
-	int rb;
-	long long acc = 0;
+	size_t rb;
+	size_t len = 0;
 	int add_tokens = 2;
 	int err = 0;
 	char buf[LIBFMT_FILE_READ_BLOCK] = {0};
@@ -107,34 +109,32 @@ int fmt_load_fp( FILE **fp, fmt_t **obj )
 	(*obj)->js = NULL;
 	while((rb = fread(buf, 1, LIBFMT_FILE_READ_BLOCK, *fp)) > 0)
 	{
-		(*obj)->js = (char *)realloc( (*obj)->js, acc + rb + 1);
+		(*obj)->js = (char *)realloc( (*obj)->js, len + rb + 1 );
 
 		if( (*obj)->js == NULL ) {
 			err = LIBFMT_ERR_REALLOC_JS;
 			break;
 		}
 
-		memcpy((*obj)->js + acc, buf, rb);
-
-		acc += (long long )rb;
+		memcpy((*obj)->js + len, buf, rb);
+		/* possible overflow but jsmn_parse() takes size_t anyway */
+		len += rb;
 	}
 
-	if(acc < 2) {
+	if ( len < 2 ) {
 		err = LIBFMT_ERR_PARSER;
 		goto error;
 	}
 
-	err = fmt_load_normalized((*obj)->js, acc);
-	if(err)
+	len = fmt_load_normalized( (*obj)->js, len );
+	if ( len < 2 ) {
+		err = LIBFMT_ERR_NORMALIZE;
 		goto error;
-
-	if(err < 0 && err != LIBFMT_ERR_NULLMET)
-		goto error;
+	}
 
 	/* try to parse */
-	while ( (err = jsmn_parse( &(*obj)->parser, (*obj)->js,
-				   strlen((*obj)->js), (*obj)->tok,
-				   (*obj)->num_tokens ))
+	while ( (err = jsmn_parse( &(*obj)->parser, (*obj)->js, len,
+				    (*obj)->tok, (*obj)->num_tokens ))
 		== JSMN_ERROR_NOMEM )
 	{
 		/* allocate more tokens and try to parse again */
