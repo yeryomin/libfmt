@@ -89,24 +89,10 @@ fmt_t *fmt_null( void )
 
 fmt_t *fmt_bool( int b )
 {
-	int len = 0;
-	char *value = NULL;
-
 	if ( b == LIBFMT_TRUE )
-		len = 4;
+		return fmt_primitive( "true", 4, FMT_TYPE_BOOL );
 	else
-		len = 5;
-
-	value = (char *)malloc( len );
-	if ( b == LIBFMT_TRUE )
-		memcpy( value, "true", len );
-	else
-		memcpy( value, "false", len );
-
-	fmt_t *res = fmt_primitive( value, len, FMT_TYPE_BOOL );
-
-	free( value );
-	return res;
+		return fmt_primitive( "false", 5, FMT_TYPE_BOOL );
 }
 
 fmt_t *fmt_copy_dup( fmt_t *from, fmt_tok_t *where )
