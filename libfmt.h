@@ -382,6 +382,19 @@ int fmt_get( fmt_t *p, fmt_tok_t *where, const char *key, fmt_t *res );
 int fmt_get_path( fmt_t *p, fmt_tok_t *where, const char **path, fmt_t *res );
 
 /**
+ * @brief Get string value from JSON string
+ *
+ * @param  obj pointer to \ref fmt_t structure,
+ *             previously loaded with data via parser or generator
+ * @param  tok pointer to \ref fmt_tok_t object, previously found in given
+ *             \ref fmt_t, representing JSON string (may be NULL)
+ * @param  res pointer to a string to write the result into
+ *
+ * @return LIBFMT_ERR_NONE on success, negative error code otherwise
+ */
+int fmt_string_value( fmt_t *obj, fmt_tok_t *tok, char **res );
+
+/**
  * @brief Find a key representing a string in an object
  *
  * Finds a given key in an object in a given, previously loaded, \ref fmt_t.
@@ -416,6 +429,11 @@ int fmt_get_string( fmt_t *p, fmt_tok_t *where, const char *key, char **res );
  */
 int fmt_get_string_path( fmt_t *p, fmt_tok_t *where,
 					const char **path, char **res );
+
+int fmt_number_value( fmt_t *obj, fmt_tok_t *tok, double *res );
+int fmt_get_number( fmt_t *obj, fmt_tok_t *where, const char *key, double *res );
+int fmt_get_number_path( fmt_t *obj, fmt_tok_t *where,
+					const char **path, double *res );
 
 /**
  * @brief Find a key in an object and delete it
@@ -515,6 +533,8 @@ extern int fmt_is_string( fmt_t *obj );
  */
 extern int fmt_is_null( fmt_t *p, fmt_tok_t *obj );
 
+extern int fmt_is_number( fmt_t *obj, fmt_tok_t *where, double *res );
+
 /**
  * @brief Verify if token from a given \ref fmt_t is JSON true or false
  *
@@ -539,7 +559,7 @@ extern int fmt_is_bool( fmt_t *p, fmt_tok_t *obj, int tf );
  *
  * @return LIBFMT_TRUE on success, LIBFMT_FALSE otherwise
  */
-extern int fmt_is_primitive( fmt_t *obj, fmt_tok_t *tok, const char *val );
+extern int fmt_is_primitive( fmt_t *obj, fmt_tok_t *tok );
 
 /**
  * @brief Validate token structure
@@ -787,19 +807,6 @@ int fmt_array_add_new( fmt_t *arr, fmt_t *el );
  * @return LIBFMT_ERR_NONE on success, negative error code otherwise
  */
 int fmt_array_add_new_at( fmt_t *obj, fmt_tok_t *arr, fmt_t *el );
-
-/**
- * @brief Get string value from JSON string
- *
- * @param  obj pointer to \ref fmt_t structure,
- *             previously loaded with data via parser or generator
- * @param  tok pointer to \ref fmt_tok_t object, previously found in given
- *             \ref fmt_t, representing JSON string (may be NULL)
- * @param  res pointer to a string to write the result into
- *
- * @return LIBFMT_ERR_NONE on success, negative error code otherwise
- */
-int fmt_string_value( fmt_t *obj, fmt_tok_t *tok, char **res );
 
 /**
  * @brief Get string representation of any JSON object

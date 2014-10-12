@@ -58,39 +58,55 @@ inline int fmt_is_string( fmt_t *obj )
 	return fmt_tok_is_string( obj->tok );
 }
 
-inline int fmt_is_primitive( fmt_t *obj, fmt_tok_t *tok, const char *val )
+inline int fmt_is_primitive( fmt_t *obj, fmt_tok_t *where )
 {
 	if ( !obj || !obj->js || !obj->tok )
 		return LIBFMT_FALSE;
 
-	if ( !val )
+	if ( !tok_is_type( (where? where : obj->tok), JSMN_PRIMITIVE ) )
 		return LIBFMT_FALSE;
 
-	fmt_tok_t *tmp_tok = obj->tok;
-	if ( tok )
-		tmp_tok = tok;
+	return LIBFMT_TRUE;
+}
 
-	if ( !tok_is_type( tmp_tok, JSMN_PRIMITIVE ) )
+inline int fmt_is_bool( fmt_t *obj, fmt_tok_t *where, int tf )
+{
+	if ( !fmt_is_primitive( obj, where ) )
 		return LIBFMT_FALSE;
 
-	if ( !strncmp( obj->js + tmp_tok->start, val, strlen(val) ) )
+	if ( !strncmp( obj->js + (where? where : obj->tok)->start,
+				tf == LIBFMT_TRUE? "true" : "false",
+				tf == LIBFMT_TRUE? 4 : 5 ) )
 		return LIBFMT_TRUE;
 
 	return LIBFMT_FALSE;
-
 }
 
-inline int fmt_is_bool( fmt_t *obj, fmt_tok_t *tok, int tf )
+inline int fmt_is_null( fmt_t *obj, fmt_tok_t *where )
 {
-	if ( tf == LIBFMT_TRUE )
-		return fmt_is_primitive( obj, tok, "true" );
-	else
-		return fmt_is_primitive( obj, tok, "false" );
+	if ( !fmt_is_primitive( obj, where ) )
+		return LIBFMT_FALSE;
+
+	if ( !strncmp( obj->js + (where? where : obj->tok)->start, "null", 4 ) )
+		return LIBFMT_TRUE;
+
+	return LIBFMT_FALSE;
 }
 
-inline int fmt_is_null( fmt_t *obj, fmt_tok_t *tok )
+inline int fmt_is_number( fmt_t *obj, fmt_tok_t *where, double *res )
 {
-	return fmt_is_primitive( obj, tok, "null" );
+	if ( !fmt_is_primitive( obj, where ) )
+		return LIBFMT_FALSE;
+
+	char *p;
+	double tmp = strtod( obj->js + (where? where : obj->tok)->start, &p );
+	if ( res )
+		*res = tmp;
+
+	if ( *p == '\0' )
+		return LIBFMT_TRUE;
+
+	return LIBFMT_FALSE;
 }
 
 inline int fmt_tok_valid( fmt_tok_t *tok )

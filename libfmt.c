@@ -95,6 +95,16 @@ fmt_t *fmt_bool( int b )
 		return fmt_primitive( "false", 5, FMT_TYPE_BOOL );
 }
 
+fmt_t *fmt_number( double num )
+{
+	int len = 128;
+	char str[len];
+
+	len = snprintf( str, len - 1, "%f", num );
+
+	return fmt_primitive( str, len, FMT_TYPE_NUMBER );
+}
+
 fmt_t *fmt_copy_dup( fmt_t *from, fmt_tok_t *where )
 {
 	fmt_t *res = (fmt_t *)malloc( sizeof(fmt_t) );
@@ -369,6 +379,44 @@ int fmt_get_string_path( fmt_t *obj, fmt_tok_t *where,
 		return LIBFMT_ERR_GENERIC;
 
 	if ( fmt_string_value( obj, &tmp, res ) )
+		return LIBFMT_ERR_GENERIC;
+
+	return LIBFMT_ERR_NONE;
+}
+
+int fmt_number_value( fmt_t *obj, fmt_tok_t *tok, double *res )
+{
+	if ( !obj || !obj->js || !obj->tok )
+		return LIBFMT_ERR_OBJ_INVALID;
+
+	if ( fmt_is_number( obj, tok, res ) == LIBFMT_FALSE )
+		return LIBFMT_ERR_GENERIC;
+
+	return LIBFMT_ERR_NONE;
+}
+
+int fmt_get_number( fmt_t *obj, fmt_tok_t *where, const char *key, double *res )
+{
+	fmt_tok_t tmp = FMT_TOK_NULL;
+
+	if ( fmt_get_tok( obj, where, key, &tmp ) )
+		return LIBFMT_ERR_GENERIC;
+
+	if ( fmt_number_value( obj, &tmp, res ) )
+		return LIBFMT_ERR_GENERIC;
+
+	return LIBFMT_ERR_NONE;
+}
+
+int fmt_get_number_path( fmt_t *obj, fmt_tok_t *where,
+					const char **path, double *res )
+{
+	fmt_tok_t tmp;
+
+	if ( fmt_get_tok_path( obj, where, path, &tmp ) )
+		return LIBFMT_ERR_GENERIC;
+
+	if ( fmt_number_value( obj, &tmp, res ) )
 		return LIBFMT_ERR_GENERIC;
 
 	return LIBFMT_ERR_NONE;
