@@ -1,4 +1,5 @@
 /*************************************************************************
+ * Copyright (c) 2014 Roman Yeryomin <roman@advem.lv>
  * Copyright (c) <2013, 2014>  SAF TEHNIKA JSC (www.saftehnika.com)
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -99,13 +100,37 @@ inline int fmt_is_number( fmt_t *obj, fmt_tok_t *where, double *res )
 		return LIBFMT_FALSE;
 
 	char *p;
-	double tmp = strtod( obj->js + (where? where : obj->tok)->start, &p );
+	double tmp = 0;
+	char *num = NULL;
+
+	size_t start = obj->tok->start;
+	size_t end = obj->tok->end;
+	size_t len = 0;
+
+	if ( where ) {
+		start = where->start;
+		end = where->end;
+	}
+
+	len = end - start;
+
+	num = (char *)malloc( len + 1 );
+	if ( !num )
+		return LIBFMT_FALSE;
+
+	memcpy( num, obj->js + start, len );
+	num[len] = '\0';
+
+	tmp = strtod( num, &p );
 	if ( res )
 		*res = tmp;
 
-	if ( *p == '\0' )
+	if ( *p == '\0' ) {
+		free( num );
 		return LIBFMT_TRUE;
+	}
 
+	free( num );
 	return LIBFMT_FALSE;
 }
 
