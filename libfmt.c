@@ -101,7 +101,7 @@ fmt_t *fmt_double( double num )
 	int len = 128;
 	char str[len];
 
-	len = snprintf( str, len - 1, "%f", num );
+	len = snprintf( str, len - 1, "%.20f", num );
 	if ( len < 0 )
 		return NULL;
 

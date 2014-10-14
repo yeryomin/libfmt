@@ -11,6 +11,8 @@
 #define TEST_FILE	"test.json"
 #define RESULT_FILE	"result"
 #define A(x)		assert((x) >= 0)
+#define D		12.1203981214
+#define I		-1348712304324
 
 int main( int argc, char *argv[] )
 {
@@ -37,6 +39,24 @@ int main( int argc, char *argv[] )
 	fprintf( fp, "float: " );
 	A( fmt_get_double( &p, NULL, "float", &dnum ) );
 	fprintf( fp, "%.12f\n", dnum );
+
+	fmt_t *d = fmt_double( D );
+	fprintf( fp, "generated double: " );
+	A( fmt_double_value( d, NULL, &dnum ) );
+	if ( dnum == D )
+		fprintf( fp, "%.10f\n", dnum );
+	else
+		fprintf( fp, "FAIL\n" );
+	fmt_free( d );
+
+	fmt_t *i = fmt_integer( I );
+	fprintf( fp, "generated integer: " );
+	A( fmt_integer_value( i, NULL, &inum ) );
+	if ( inum == I )
+		fprintf( fp, "%lli\n", inum );
+	else
+		fprintf( fp, "FAIL\n" );
+	fmt_free( i );
 
 exit:
 	A( fmt_free( &p ) );
