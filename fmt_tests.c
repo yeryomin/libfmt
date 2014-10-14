@@ -127,12 +127,11 @@ inline int fmt_is_number( fmt_t *obj, fmt_tok_t *where, fmt_num_t *res )
 	/* jsmn doesn't destinguish number types,
 	 * so we have to try to do it ourselves */
 	if ( type == FMT_TYPE_UNDEF ) {
-		(where? where : obj->tok)->type = FMT_TYPE_INTEGER;
 		type = FMT_TYPE_INTEGER;
 		for( i = 0; num[i]; i++ ) {
 			if ( num[i] == '.' ) {
-				(where? where:obj->tok)->type = FMT_TYPE_DOUBLE;
 				type = FMT_TYPE_DOUBLE;
+				break;
 			}
 		}
 	}
@@ -151,6 +150,14 @@ inline int fmt_is_number( fmt_t *obj, fmt_tok_t *where, fmt_num_t *res )
 	}
 
 	if ( *p == '\0' ) {
+		switch (type) {
+		case FMT_TYPE_DOUBLE:
+			(where? where : obj->tok)->type = FMT_TYPE_DOUBLE;
+			break;
+		case FMT_TYPE_INTEGER:
+			(where? where : obj->tok)->type = FMT_TYPE_INTEGER;
+			break;
+		}
 		free( num );
 		return LIBFMT_TRUE;
 	}
