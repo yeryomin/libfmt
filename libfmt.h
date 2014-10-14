@@ -61,7 +61,8 @@ typedef enum {
 	FMT_TYPE_OBJECT,
 	FMT_TYPE_ARRAY,
 	FMT_TYPE_STRING,
-	FMT_TYPE_NUMBER,
+	FMT_TYPE_DOUBLE,
+	FMT_TYPE_INTEGER,
 	FMT_TYPE_NULL,
 	FMT_TYPE_BOOL,
 	FMT_TYPE_PARSER,
@@ -255,6 +256,20 @@ fmt_t *fmt_null( void );
 fmt_t *fmt_bool( int b );
 
 /**
+ * @brief Create JSON number object
+ *
+ * Returns a pointer to \ref fmt_t containing JSON number.
+ * Result must be freed with \ref fmt_free()
+ *
+ * @param num  long long int for \ref fmt_integer() or
+ *             double for \ref fmt_double()
+ *
+ * @return pointer to \ref fmt_t on success, NULL otherwise
+ */
+fmt_t *fmt_double( double num );
+fmt_t *fmt_integer( long long num );
+
+/**
  * @brief Extract a token data from given, previously parsed or generated JSON
  *
  * Extraction means creating a \ref fmt_t filled with token data and
@@ -431,10 +446,15 @@ int fmt_get_string( fmt_t *p, fmt_tok_t *where, const char *key, char **res );
 int fmt_get_string_path( fmt_t *p, fmt_tok_t *where,
 					const char **path, char **res );
 
-int fmt_number_value( fmt_t *obj, fmt_tok_t *tok, double *res );
-int fmt_get_number( fmt_t *obj, fmt_tok_t *where, const char *key, double *res );
-int fmt_get_number_path( fmt_t *obj, fmt_tok_t *where,
+int fmt_double_value( fmt_t *obj, fmt_tok_t *tok, double *res );
+int fmt_get_double( fmt_t *obj, fmt_tok_t *where, const char *key, double *res );
+int fmt_get_double_path( fmt_t *obj, fmt_tok_t *where,
 					const char **path, double *res );
+int fmt_integer_value( fmt_t *obj, fmt_tok_t *tok, long long *res );
+int fmt_get_integer( fmt_t *obj, fmt_tok_t *where,
+		     const char *key, long long *res );
+int fmt_get_integer_path( fmt_t *obj, fmt_tok_t *where,
+			  const char **path, long long *res );
 
 /**
  * @brief Find a key in an object and delete it
@@ -534,7 +554,11 @@ extern int fmt_is_string( fmt_t *obj );
  */
 extern int fmt_is_null( fmt_t *p, fmt_tok_t *obj );
 
-extern int fmt_is_number( fmt_t *obj, fmt_tok_t *where, double *res );
+typedef struct fmt_num_t {
+	double d;
+	long long i;
+} fmt_num_t;
+extern int fmt_is_number( fmt_t *obj, fmt_tok_t *where, fmt_num_t *res );
 
 /**
  * @brief Verify if token from a given \ref fmt_t is JSON true or false

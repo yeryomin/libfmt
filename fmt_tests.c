@@ -94,24 +94,27 @@ inline int fmt_is_null( fmt_t *obj, fmt_tok_t *where )
 	return LIBFMT_FALSE;
 }
 
-inline int fmt_is_number( fmt_t *obj, fmt_tok_t *where, double *res )
+inline int fmt_is_number( fmt_t *obj, fmt_tok_t *where, fmt_num_t *res )
 {
 	if ( !fmt_is_primitive( obj, where ) )
 		return LIBFMT_FALSE;
 
 	char *p;
-	double tmp = 0;
+	double dtmp = 0;
+	long long itmp = 0;
 	char *num = NULL;
 
+	int type = obj->tok->type;
 	size_t start = obj->tok->start;
 	size_t end = obj->tok->end;
 	size_t len = 0;
+	size_t i;
 
 	if ( where ) {
+		type = where->type;
 		start = where->start;
 		end = where->end;
 	}
-
 	len = end - start;
 
 	num = (char *)malloc( len + 1 );
@@ -121,9 +124,31 @@ inline int fmt_is_number( fmt_t *obj, fmt_tok_t *where, double *res )
 	memcpy( num, obj->js + start, len );
 	num[len] = '\0';
 
-	tmp = strtod( num, &p );
-	if ( res )
-		*res = tmp;
+	/* jsmn doesn't destinguish number types,
+	 * so we have to try to do it ourselves */
+	if ( type == FMT_TYPE_UNDEF ) {
+		(where? where : obj->tok)->type = FMT_TYPE_INTEGER;
+		type = FMT_TYPE_INTEGER;
+		for( i = 0; num[i]; i++ ) {
+			if ( num[i] == '.' ) {
+				(where? where:obj->tok)->type = FMT_TYPE_DOUBLE;
+				type = FMT_TYPE_DOUBLE;
+			}
+		}
+	}
+
+	switch (type) {
+		case FMT_TYPE_DOUBLE:
+			dtmp = strtod( num, &p );
+			if ( res )
+				res->d = dtmp;
+			break;
+		case FMT_TYPE_INTEGER:
+			itmp = strtoll( num, &p, 10 );
+			if ( res )
+				res->i = itmp;
+			break;
+	}
 
 	if ( *p == '\0' ) {
 		free( num );

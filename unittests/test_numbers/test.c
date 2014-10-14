@@ -15,8 +15,8 @@
 int main( int argc, char *argv[] )
 {
 	fmt_t p;
-	fmt_tok_t numtok;
-	double num;
+	double dnum;
+	long long inum;
 
 	FILE *fp = fopen( RESULT_FILE, "w" );
 	assert( fp != NULL );
@@ -27,25 +27,16 @@ int main( int argc, char *argv[] )
 	}
 
 	fprintf( fp, "integer: " );
-	A( fmt_get_tok( &p, NULL, "integer", &numtok ) );
-	if ( fmt_is_number( &p, &numtok, &num ) )
-		fprintf( fp, "%.0f\n", num );
-	else
-		fprintf( fp, "FAIL\n" );
+	A( fmt_get_integer( &p, NULL, "integer", &inum ) );
+	fprintf( fp, "%lli\n", inum );
 
 	fprintf( fp, "negative: " );
-	A( fmt_get_tok( &p, NULL, "negative", &numtok ) );
-	if ( fmt_is_number( &p, &numtok, &num ) )
-		fprintf( fp, "%.0f\n", num );
-	else
-		fprintf( fp, "FAIL\n" );
+	A( fmt_get_integer( &p, NULL, "negative", &inum ) );
+	fprintf( fp, "%lli\n", inum );
 
 	fprintf( fp, "float: " );
-	A( fmt_get_tok( &p, NULL, "float", &numtok ) );
-	if ( fmt_is_number( &p, &numtok, &num ) )
-		fprintf( fp, "%.12f\n", num );
-	else
-		fprintf( fp, "FAIL\n" );
+	A( fmt_get_double( &p, NULL, "float", &dnum ) );
+	fprintf( fp, "%.12f\n", dnum );
 
 exit:
 	A( fmt_free( &p ) );

@@ -386,7 +386,8 @@ int fmt_new( const char *s, int len, fmt_type_t type, fmt_t *res )
 		case FMT_TYPE_STRING:
 			res->tok->type = JSMN_STRING;
 			break;
-		case FMT_TYPE_NUMBER:
+		case FMT_TYPE_DOUBLE:
+		case FMT_TYPE_INTEGER:
 		case FMT_TYPE_NULL:
 		case FMT_TYPE_BOOL:
 			res->tok->type = JSMN_PRIMITIVE;
