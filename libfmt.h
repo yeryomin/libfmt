@@ -266,7 +266,7 @@ fmt_t *fmt_bool( int b );
  *
  * @return pointer to \ref fmt_t on success, NULL otherwise
  */
-fmt_t *fmt_double( double num );
+fmt_t *fmt_double( double num, int precision );
 fmt_t *fmt_integer( long long num );
 
 /**

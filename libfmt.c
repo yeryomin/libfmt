@@ -96,12 +96,12 @@ fmt_t *fmt_bool( int b )
 		return fmt_primitive( "false", 5, FMT_TYPE_BOOL );
 }
 
-fmt_t *fmt_double( double num )
+fmt_t *fmt_double( double num, int precision )
 {
 	int len = 128;
 	char str[len];
 
-	len = snprintf( str, len - 1, "%.20f", num );
+	len = snprintf( str, len - 1, "%.*f", precision, num );
 	if ( len < 0 )
 		return NULL;
 

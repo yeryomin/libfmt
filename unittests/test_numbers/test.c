@@ -12,6 +12,7 @@
 #define RESULT_FILE	"result"
 #define A(x)		assert((x) >= 0)
 #define D		12.1203981214
+#define DP		10
 #define I		-1348712304324
 
 int main( int argc, char *argv[] )
@@ -40,11 +41,11 @@ int main( int argc, char *argv[] )
 	A( fmt_get_double( &p, NULL, "float", &dnum ) );
 	fprintf( fp, "%.12f\n", dnum );
 
-	fmt_t *d = fmt_double( D );
+	fmt_t *d = fmt_double( D, DP );
 	fprintf( fp, "generated double: " );
 	A( fmt_double_value( d, NULL, &dnum ) );
 	if ( dnum == D )
-		fprintf( fp, "%.10f\n", dnum );
+		fprintf( fp, "%.*f\n", (int)DP, dnum );
 	else
 		fprintf( fp, "FAIL\n" );
 	fmt_free( d );
